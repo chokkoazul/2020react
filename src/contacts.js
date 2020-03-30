@@ -6,7 +6,7 @@ import React from 'react'
   <div className="row">
     <div className="col">
         <div className="alert alert-primary" role="alert">
-        <center>Información Casos COVID-19</center>
+        <center>Global</center>
         </div>
     </div>
   </div>

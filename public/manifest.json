@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Chokkovid-19",
+  "name": "Casos Covid-19 por Chokko",
   "icons": [
     {
       "src": "favicon.ico",
