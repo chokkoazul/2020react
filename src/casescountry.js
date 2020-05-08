@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import Contacts from './contacts';
 import Select from 'react-select';
+import Flag from './flag';
+import DataCov from './datacov';
 
 const options = [
   { value: 'all', label: 'Global' }
@@ -11,11 +12,11 @@ class CasesCountry extends Component {
   state = {
     sumary: {},
     selectedOption: "CHL",
-    title: "Chile"
+    title: "Chile",
   }
 
   componentDidMount() {
-    let api = this.props.country == "all" ? 'https://corona.lmao.ninja/all' : 'https://corona.lmao.ninja/countries/'+this.props.country 
+    let api = this.props.country == "all" ? 'https://corona.lmao.ninja/v2/all' : 'https://corona.lmao.ninja/v2/countries/'+this.props.country 
     console.log("country:",this.props.country)
     fetch(api)
     .then(res => res.json())
@@ -26,18 +27,19 @@ class CasesCountry extends Component {
     )
     .catch(console.log)
 
-    fetch('https://corona.lmao.ninja/countries?sort=country')
+    fetch('https://corona.lmao.ninja/v2/countries?sort=country')
     .then(res => res.json())
     .then(
       (data) => {
         data.filter(function(country){
-            if(country.countryInfo.country!=undefined || (country.country!="Diamond Princess" && country.country!="MS Zaandam")){
-            options.push({value: country.countryInfo.iso3, label: country.countryInfo.country})
+            if((country.country!="Diamond Princess" && country.country!="MS Zaandam")){
+            options.push({value: country.countryInfo.iso3, label: country.country})
             }
         })
       }
     )
     .catch(console.log)
+
 
   }
 
@@ -45,13 +47,14 @@ class CasesCountry extends Component {
     this.setState({ selectedOption });
     console.log("handleChangeselectedOption...",selectedOption.value)
     
-    let api = selectedOption.value == "all" ? 'https://corona.lmao.ninja/all' : 'https://corona.lmao.ninja/countries/'+selectedOption.value 
+    let api = selectedOption.value == "all" ? 'https://corona.lmao.ninja/v2/all' : 'https://corona.lmao.ninja/v2/countries/'+selectedOption.value 
     
     fetch(api)
     .then(res => res.json())
     .then(
       (data) => {
         this.setState({sumary: data, title: selectedOption.label})
+        console.log("data ajajaja...",this.state.sumary)
       }
     )
     .catch(console.log)  
@@ -59,7 +62,17 @@ class CasesCountry extends Component {
 
   render() {
     const { selectedOption } = this.state.selectedOption;
-    
+    let flag;
+
+   if (this.state.sumary.countryInfo == undefined){
+        flag = "https://cdnb.20m.es/ciencias-mixtas/files/2015/05/Flag_20x30-300x200.jpg"
+    }
+    else{
+        flag = this.state.sumary.countryInfo.flag;
+    }
+    if(Object.entries(this.state.sumary).length == 0){
+        return false
+    }
     return (
         <div className="container">
         <div className="row">
@@ -77,50 +90,11 @@ class CasesCountry extends Component {
         options={options}
         defaultValue={{label:"Chile", value:"CHL"}}
       /></div></div><br></br>
-        <div className="row">
-          <div className="col">
-              <div className="alert alert-primary" role="alert">
-              <center>{this.state.title}</center>
-              </div>
-          </div>
+        <Flag source={flag}/>
+        <DataCov title="Casos" info={this.state.sumary.cases} color="alert alert-secondary" />
+        <DataCov title="Muertes" info={this.state.sumary.deaths} color="alert alert-danger" />
+        <DataCov title="Recuperados" info={this.state.sumary.recovered} color="alert alert-success"/>
         </div>
-        <div className="row">
-          <div className="col">
-          <div className="alert alert-secondary" role="alert">
-              <center>Casos</center>
-              </div>
-          </div>
-          <div className="col">
-          <div className="alert alert-secondary" role="alert">
-              <center>{new Intl.NumberFormat().format(this.state.sumary.cases)}</center>
-              </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col">
-          <div className="alert alert-danger" role="alert">
-              <center>Muertes</center>
-              </div>
-          </div>
-          <div className="col">
-          <div className="alert alert-danger" role="alert">
-              <center>{new Intl.NumberFormat().format(this.state.sumary.deaths)}</center>
-              </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col">
-          <div className="alert alert-success" role="alert">
-              <center>Recuperados</center>
-              </div>
-          </div>
-          <div className="col">
-          <div className="alert alert-success" role="alert">
-              <center>{new Intl.NumberFormat().format(this.state.sumary.recovered)}</center>
-              </div>
-          </div>
-        </div>
-      </div>
     );
   }
 }

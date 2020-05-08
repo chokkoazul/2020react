@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import Contacts from './contacts';
 import CasesCountry from './casescountry';
-import Select from 'react-select';
 
 const options = [
   { value: 'CHL', label: 'Chile' },
@@ -16,7 +14,7 @@ class App extends Component {
 
   componentDidMount() {
     console.log("componentDidMount")
-    fetch('https://corona.lmao.ninja/all')
+    fetch('https://corona.lmao.ninja/v2/all')
     .then(res => res.json())
     .then(
       (data) => {
